@@ -1,5 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "math.h"
+#include <Windows.h>
+#include <ctime>
+#include <QKeyEvent>
 #include <QDebug>
 
 
@@ -60,14 +64,58 @@ void MainWindow::on_actionExit_triggered()
     //Quits application
     QApplication::quit();
 }
+/**
+ * @brief MainWindow::keyPressEvent Function to listen for keyboard button presses.
+ * @details allows keypad to be used for calculations.
+ * @param event gets current get pressed as an event object
+ */
+void MainWindow::keyPressEvent(QKeyEvent *event){
+    switch(event->key()){
+    case Qt::Key_0: emit ui->pushButton_0->clicked(true);
+        break;
+    case Qt::Key_1: emit ui->pushButton_1->clicked(true);
+        break;
+    case Qt::Key_2: emit ui->pushButton_2->clicked(true);
+        break;
+    case Qt::Key_3: emit ui->pushButton_3->clicked(true);
+        break;
+    case Qt::Key_4: emit ui->pushButton_4->clicked(true);
+        break;
+    case Qt::Key_5: emit ui->pushButton_5->clicked(true);
+        break;
+    case Qt::Key_6: emit ui->pushButton_6->clicked(true);
+        break;
+    case Qt::Key_7: emit ui->pushButton_7->clicked(true);
+        break;
+    case Qt::Key_8: emit ui->pushButton_8->clicked(true);
+        break;
+    case Qt::Key_9: emit ui->pushButton_9->clicked(true);
+        break;
+    case Qt::Key_Asterisk: emit ui->pushButton_Multiply->clicked(true);
+        break;
+    case Qt::Key_Slash: emit ui->pushButton_Divide->clicked(true);
+        break;
+    case Qt::Key_Minus: emit ui->pushButton_Minus->clicked(true);
+        break;
+    case Qt::Key_Plus: emit ui->pushButton_Plus->clicked(true);
+        break;
+    case Qt::Key_Enter: emit ui->pushButton_Equals->clicked(true);
+        break;
+    case Qt::Key_Period: emit ui->pushButton_Period->clicked(true);
+        break;
+    }
+}
 \
 /**
  * @brief MainWindow::buttonHandler Handles the button events of 0 through 9
  * @details Creates an object from the event sender then compares the sender to the buttons to get the appropriate number pressed.
  */
 void MainWindow::buttonHandler(){
-    qDebug() << "Pressed";
+    qDebug() << "Pressed ";
     QObject* obj = sender();
+
+//Cannot use a switch here since QObjects cannot be casted as integral types.
+    //TODO: Find alternative to if/else chain
 
     if(obj == ui->pushButton_1){
           qDebug() << "1";
