@@ -1,7 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <QMainWindow>
+
+enum operation{noneOp, multiplyOp, divideOp, minusOp, plusOp, inverseOp, modOp, percentOp, rootOp};
 
 namespace Ui {
 class MainWindow;
@@ -14,11 +15,11 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void numberInput(int n);
 private slots:
     void on_actionExit_triggered();
     void buttonHandler();
     void Percent();
-    void Period();
     void Plus();
     void Clear();
     void Divide();

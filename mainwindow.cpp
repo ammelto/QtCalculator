@@ -1,11 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "math.h"
-#include <Windows.h>
-#include <ctime>
+#include <QPointer>
 #include <QKeyEvent>
 #include <QDebug>
 
+static int curOp;
 
 /**
  * @brief MainWindow::MainWindow Constructor for the main window.
@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //Sets up initial UI constraints
     ui->setupUi(this);
     ui->numberField->setReadOnly(true);
+    ui->numberField->setText("0");
+
+    curOp = 0;
 
     //Very ineffecient way to connect button signals to the slot handler
     //Will improve this later, may try an array of button objects.
@@ -34,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton_9, SIGNAL(clicked()), this, SLOT(buttonHandler()));
     connect(ui->pushButton_0, SIGNAL(clicked()), this, SLOT(buttonHandler()));
     connect(ui->pushButton_Percent, SIGNAL(clicked()), this, SLOT(Percent()));
-    connect(ui->pushButton_Period, SIGNAL(clicked()), this, SLOT(Period()));
+    connect(ui->pushButton_Period, SIGNAL(clicked()), this, SLOT(buttonHandler()));
     connect(ui->pushButton_Plus, SIGNAL(clicked()), this, SLOT(Plus()));
     connect(ui->pushButton_Clear, SIGNAL(clicked()), this, SLOT(Clear()));
     connect(ui->pushButton_Divide, SIGNAL(clicked()), this, SLOT(Divide()));
@@ -111,66 +114,89 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
  * @details Creates an object from the event sender then compares the sender to the buttons to get the appropriate number pressed.
  */
 void MainWindow::buttonHandler(){
-    qDebug() << "Pressed ";
     QObject* obj = sender();
-
 //Cannot use a switch here since QObjects cannot be casted as integral types.
     //TODO: Find alternative to if/else chain
 
     if(obj == ui->pushButton_1){
-          qDebug() << "1";
+          numberInput(1);
   }else if(obj == ui->pushButton_2){
-          qDebug() << "2";
+          numberInput(2);
   }else if(obj == ui->pushButton_3){
-          qDebug() << "3";
+          numberInput(3);
   }else if(obj == ui->pushButton_4){
-          qDebug() << "4";
+          numberInput(4);
   }else if(obj == ui->pushButton_5){
-          qDebug() << "5";
+          numberInput(5);
   }else if(obj == ui->pushButton_6){
-          qDebug() << "6";
+          numberInput(6);
   }else if(obj == ui->pushButton_7){
-          qDebug() << "7";
+          numberInput(7);
   }else if(obj == ui->pushButton_8){
-          qDebug() << "8";
+          numberInput(8);
   }else if(obj == ui->pushButton_9){
-          qDebug() << "9";
+          numberInput(9);
   }else if(obj == ui->pushButton_0){
-        qDebug() << "0";
+          numberInput(0);
+  }else if(obj == ui->pushButton_Period){
+          numberInput(-1);
   }
 }
 
 //TODO: Implement functions
 void MainWindow::Percent(){
      qDebug() << "%";
-}
-void MainWindow::Period(){
-     qDebug() << ".";
+     curOp = percentOp;
 }
 void MainWindow::Plus(){
      qDebug() << "+";
+     curOp = plusOp;
 }
 void MainWindow::Clear(){
      qDebug() << "CLEAR";
+     curOp = noneOp;
+     ui->numberField->setText("0");
 }
 void MainWindow::Divide(){
      qDebug() << "/";
+     curOp = divideOp;
 }
 void MainWindow::Inverse(){
      qDebug() << "1/x";
+     curOp = inverseOp;
 }
 void MainWindow::Equals(){
      qDebug() << "=";
 }
 void MainWindow::Minus(){
      qDebug() << "-";
+     curOp = minusOp;
 }
 void MainWindow::Modulus(){
      qDebug() << "mod";
+     curOp = modOp;
 }
 void MainWindow::Sqrt(){
      qDebug() << "Sqrt";
+     curOp = rootOp;
 }
 void MainWindow::Multiply(){
      qDebug() << "*";
+     curOp = multiplyOp;
+}
+void MainWindow::numberInput(int n){
+
+    qDebug() << ui->numberField->toPlainText().length() << " " << curOp;
+
+    if(ui->numberField->toPlainText() == "0"){
+        ui->numberField->setText("");
+    }else if(16 <= ui->numberField->toPlainText().length()){
+        return;
+    }
+
+    if((n == -1) && !(ui->numberField->toPlainText().contains("."))){
+        ui->numberField->setText(ui->numberField->toPlainText() + ".");
+    }else if(n != -1){
+        ui->numberField->setText(ui->numberField->toPlainText() + QString::number(n));
+    }
 }
