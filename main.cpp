@@ -1,13 +1,21 @@
 /**
   * @author Alexander Melton
-  * @version 0.1a pre-release
+  * @version 1.0 First Release
   * @copyright MIT License
   *
   * @brief Simple calculator created using Qt and c++
-  * Currently, I'm attempting to learn c++ and Qt at the same time.
-  * The code should become cleaner as I work on the project.
-  * I plan on making several more complex applications using Qt and C++.
-  * Once I am more familiar with c++ and Qt I may try and do some work with SDL
+  * @detail Currently, I'm attempting to learn c++ and Qt at the same time.
+  *     The code should become cleaner as I work on the project.
+  *     I plan on making several more complex applications using Qt and C++.
+  *     Once I am more familiar with c++ and Qt I may try and do some work with SDL
+  *
+  * @bug version 1.0: When the result in memory is a value less than 10, entering a
+  *     number that begins with that same digit will cause the program to skip the first digit.
+  *
+  * @todo Add visual operation indicators.
+  *     Fix memory bug.
+  *     Optimize memory management.
+  *     Add functions.
   */
 #include "mainwindow.h"
 #include <QApplication>

@@ -19,16 +19,7 @@ public:
 private slots:
     void on_actionExit_triggered();
     void buttonHandler();
-    void Percent();
-    void Plus();
-    void Clear();
-    void Divide();
-    void Inverse();
-    void Equals();
-    void Minus();
-    void Modulus();
-    void Sqrt();
-    void Multiply();
+    void handleCurOp(operation newOp);
 
 private:
     Ui::MainWindow *ui;

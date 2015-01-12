@@ -4,8 +4,10 @@
 #include <QPointer>
 #include <QKeyEvent>
 #include <QDebug>
+#include <functional>
 
 static int curOp;
+static double memory;
 
 /**
  * @brief MainWindow::MainWindow Constructor for the main window.
@@ -22,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->numberField->setText("0");
 
     curOp = 0;
+    memory = 0;
 
     //Very ineffecient way to connect button signals to the slot handler
     //Will improve this later, may try an array of button objects.
@@ -36,17 +39,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton_8, SIGNAL(clicked()), this, SLOT(buttonHandler()));
     connect(ui->pushButton_9, SIGNAL(clicked()), this, SLOT(buttonHandler()));
     connect(ui->pushButton_0, SIGNAL(clicked()), this, SLOT(buttonHandler()));
-    connect(ui->pushButton_Percent, SIGNAL(clicked()), this, SLOT(Percent()));
+    connect(ui->pushButton_Percent, SIGNAL(clicked()), this, SLOT(buttonHandler()));
     connect(ui->pushButton_Period, SIGNAL(clicked()), this, SLOT(buttonHandler()));
-    connect(ui->pushButton_Plus, SIGNAL(clicked()), this, SLOT(Plus()));
-    connect(ui->pushButton_Clear, SIGNAL(clicked()), this, SLOT(Clear()));
-    connect(ui->pushButton_Divide, SIGNAL(clicked()), this, SLOT(Divide()));
-    connect(ui->pushButton_Inverse, SIGNAL(clicked()), this, SLOT(Inverse()));
-    connect(ui->pushButton_Equals, SIGNAL(clicked()), this, SLOT(Equals()));
-    connect(ui->pushButton_Minus, SIGNAL(clicked()), this, SLOT(Minus()));
-    connect(ui->pushButton_Multiply, SIGNAL(clicked()), this, SLOT(Multiply()));
-    connect(ui->pushButton_Modulus, SIGNAL(clicked()), this, SLOT(Modulus()));
-    connect(ui->pushButton_Sqrt, SIGNAL(clicked()), this, SLOT(Sqrt()));
+    connect(ui->pushButton_Plus, SIGNAL(clicked()), this, SLOT(buttonHandler()));
+    connect(ui->pushButton_Clear, SIGNAL(clicked()), this, SLOT(buttonHandler()));
+    connect(ui->pushButton_Divide, SIGNAL(clicked()), this, SLOT(buttonHandler()));
+    connect(ui->pushButton_Inverse, SIGNAL(clicked()), this, SLOT(buttonHandler()));
+    connect(ui->pushButton_Equals, SIGNAL(clicked()), this, SLOT(buttonHandler()));
+    connect(ui->pushButton_Minus, SIGNAL(clicked()), this, SLOT(buttonHandler()));
+    connect(ui->pushButton_Multiply, SIGNAL(clicked()), this, SLOT(buttonHandler()));
+    connect(ui->pushButton_Modulus, SIGNAL(clicked()), this, SLOT(buttonHandler()));
+    connect(ui->pushButton_Sqrt, SIGNAL(clicked()), this, SLOT(buttonHandler()));
 
     qDebug() << "launched";
 }
@@ -140,63 +143,87 @@ void MainWindow::buttonHandler(){
           numberInput(0);
   }else if(obj == ui->pushButton_Period){
           numberInput(-1);
+  }else if(obj == ui->pushButton_Percent){
+        handleCurOp(percentOp);
+  }else if(obj == ui->pushButton_Plus){
+        handleCurOp(plusOp);
+  }else if(obj == ui->pushButton_Clear){
+        curOp = noneOp; //Clears all fields, acts as a true clear. No CE yet
+        memory = 0;
+        ui->numberField->setText("0");
+  }else if(obj == ui->pushButton_Divide){
+        handleCurOp(divideOp);
+  }else if(obj == ui->pushButton_Inverse){
+        curOp = inverseOp;  //This allows the inverse to have the highest priority and cannot be chained (treated as a power)
+        handleCurOp(noneOp);
+  }else if(obj == ui->pushButton_Equals){
+        handleCurOp(noneOp);
+  }else if(obj == ui->pushButton_Minus){
+        if(ui->numberField->toPlainText() == QString::number(memory)){
+            ui->numberField->setText("-"); //this allows the user to use the minus operation to input negatives
+        }else{
+            handleCurOp(minusOp);
+        }
+  }else if(obj == ui->pushButton_Modulus){
+        handleCurOp(modOp);
+  }else if(obj == ui->pushButton_Sqrt){
+        curOp = rootOp; //This allows the sprt to have the highest priority and cannot be chained (treated as a power)
+        handleCurOp(noneOp);
+  }else if(obj == ui->pushButton_Multiply){
+        handleCurOp(multiplyOp);
   }
 }
 
-//TODO: Implement functions
-void MainWindow::Percent(){
-     qDebug() << "%";
-     curOp = percentOp;
+/**
+ * @brief MainWindow::handleCurOp Handles the current queued operation before changing to the new operation
+ * @param newOp This is the new operation selected by the user via clicking the buttons
+ */
+void MainWindow::handleCurOp(operation newOp){
+    bool ok = false;
+    double val = ui->numberField->toPlainText().toDouble(&ok);
+
+    switch(curOp){
+    case noneOp: memory = val;
+        break;
+    case rootOp: memory = sqrt(val);
+        break;
+    case multiplyOp: memory = memory * val;
+        break;
+    case minusOp: memory = memory - val;
+        break;
+    case divideOp: memory = memory / val;
+        break;
+    case plusOp: memory = memory + val;
+        break;
+    case modOp: memory = fmod(memory,val);
+        break;
+    case percentOp: memory = (val * memory) / 100;
+        break;
+    case inverseOp: memory = pow(val,-1);
+        break;
+    }
+    ui->numberField->setText(QString::number(memory));
+    curOp = newOp;
 }
-void MainWindow::Plus(){
-     qDebug() << "+";
-     curOp = plusOp;
-}
-void MainWindow::Clear(){
-     qDebug() << "CLEAR";
-     curOp = noneOp;
-     ui->numberField->setText("0");
-}
-void MainWindow::Divide(){
-     qDebug() << "/";
-     curOp = divideOp;
-}
-void MainWindow::Inverse(){
-     qDebug() << "1/x";
-     curOp = inverseOp;
-}
-void MainWindow::Equals(){
-     qDebug() << "=";
-}
-void MainWindow::Minus(){
-     qDebug() << "-";
-     curOp = minusOp;
-}
-void MainWindow::Modulus(){
-     qDebug() << "mod";
-     curOp = modOp;
-}
-void MainWindow::Sqrt(){
-     qDebug() << "Sqrt";
-     curOp = rootOp;
-}
-void MainWindow::Multiply(){
-     qDebug() << "*";
-     curOp = multiplyOp;
-}
+
+/**
+ * @brief MainWindow::numberInput Allows for the input of numeric values
+ * @param n The current digit the user has selected (-1 represents a period)
+ */
 void MainWindow::numberInput(int n){
-
-    qDebug() << ui->numberField->toPlainText().length() << " " << curOp;
-
-    if(ui->numberField->toPlainText() == "0"){
-        ui->numberField->setText("");
+    if((ui->numberField->toPlainText() == QString::number(memory))){    //Clears the current field when the user begins a new number
+            ui->numberField->setText("");
     }else if(16 <= ui->numberField->toPlainText().length()){
         return;
     }
 
-    if((n == -1) && !(ui->numberField->toPlainText().contains("."))){
-        ui->numberField->setText(ui->numberField->toPlainText() + ".");
+    if((n == -1) && !(ui->numberField->toPlainText().contains("."))){   //Allows for only one decimal point
+        if(ui->numberField->toPlainText() == ""){
+            ui->numberField->setText("0."); //Doubles require a leading zero when being compared to other values 0<x<1
+        }else{
+            ui->numberField->setText(ui->numberField->toPlainText() + ".");
+        }
     }else if(n != -1){
-        ui->numberField->setText(ui->numberField->toPlainText() + QString::number(n));
+        ui->numberField->setText(ui->numberField->toPlainText() + QString::number(n));  //Creates a string of numbers
     }
 }
