@@ -162,9 +162,13 @@ void MainWindow::buttonHandler(){
   }else if(obj == ui->pushButton_Equals){
         handleCurOp(equalsOp);
   }else if(obj == ui->pushButton_Minus){
-        if(ui->numberField->toPlainText() == QString::number(memory)){
+        if((newIn || (curOp == minusOp && newIn)) && ui->numberField->toPlainText() != "-"){
             ui->numberField->setText("-"); //this allows the user to use the minus operation to input negatives
             newIn = false;
+        }else if(ui->numberField->toPlainText() == "-"){
+            ui->numberField->setText("0");
+            newIn = true;
+            return;
         }else{
             handleCurOp(minusOp);
         }
