@@ -8,6 +8,7 @@
 
 static int curOp;
 static double memory;
+static bool newIn;
 
 /**
  * @brief MainWindow::MainWindow Constructor for the main window.
@@ -25,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     curOp = 0;
     memory = 0;
+    newIn = true;
 
     //Very ineffecient way to connect button signals to the slot handler
     //Will improve this later, may try an array of button objects.
@@ -150,6 +152,7 @@ void MainWindow::buttonHandler(){
   }else if(obj == ui->pushButton_Clear){
         curOp = noneOp; //Clears all fields, acts as a true clear. No CE yet
         memory = 0;
+        newIn = true;
         ui->numberField->setText("0");
   }else if(obj == ui->pushButton_Divide){
         handleCurOp(divideOp);
@@ -157,10 +160,11 @@ void MainWindow::buttonHandler(){
         curOp = inverseOp;  //This allows the inverse to have the highest priority and cannot be chained (treated as a power)
         handleCurOp(noneOp);
   }else if(obj == ui->pushButton_Equals){
-        handleCurOp(noneOp);
+        handleCurOp(equalsOp);
   }else if(obj == ui->pushButton_Minus){
         if(ui->numberField->toPlainText() == QString::number(memory)){
             ui->numberField->setText("-"); //this allows the user to use the minus operation to input negatives
+            newIn = false;
         }else{
             handleCurOp(minusOp);
         }
@@ -203,7 +207,10 @@ void MainWindow::handleCurOp(operation newOp){
         break;
     }
     ui->numberField->setText(QString::number(memory));
-    curOp = newOp;
+    if(newOp != equalsOp){
+        curOp = newOp;  //Allows for chaining via equals
+    }
+    newIn = true;
 }
 
 /**
@@ -211,12 +218,11 @@ void MainWindow::handleCurOp(operation newOp){
  * @param n The current digit the user has selected (-1 represents a period)
  */
 void MainWindow::numberInput(int n){
-    if((ui->numberField->toPlainText() == QString::number(memory))){    //Clears the current field when the user begins a new number
+    if(newIn){    //Clears the current field when the user begins a new number
             ui->numberField->setText("");
     }else if(16 <= ui->numberField->toPlainText().length()){
         return;
     }
-
     if((n == -1) && !(ui->numberField->toPlainText().contains("."))){   //Allows for only one decimal point
         if(ui->numberField->toPlainText() == ""){
             ui->numberField->setText("0."); //Doubles require a leading zero when being compared to other values 0<x<1
@@ -226,4 +232,5 @@ void MainWindow::numberInput(int n){
     }else if(n != -1){
         ui->numberField->setText(ui->numberField->toPlainText() + QString::number(n));  //Creates a string of numbers
     }
+    newIn = false;
 }

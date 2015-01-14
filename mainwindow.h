@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 #include <QMainWindow>
 
-enum operation{noneOp, multiplyOp, divideOp, minusOp, plusOp, inverseOp, modOp, percentOp, rootOp};
+enum operation{noneOp, multiplyOp, divideOp, minusOp, plusOp, inverseOp, modOp, percentOp, rootOp, equalsOp};
 
 namespace Ui {
 class MainWindow;
