@@ -1,2 +1,2 @@
 # QtCalculator
-Basic calculator I'm working on to get familiar with Qt and C++
+Basic calculator I made to learn the basics of Qt and C++
