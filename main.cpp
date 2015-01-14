@@ -1,6 +1,6 @@
 /**
   * @author Alexander Melton
-  * @version 1.0 First Release
+  * @version 1.1.0
   * @copyright MIT License
   *
   * @brief Simple calculator created using Qt and c++
@@ -9,13 +9,6 @@
   *     I plan on making several more complex applications using Qt and C++.
   *     Once I am more familiar with c++ and Qt I may try and do some work with SDL
   *
-  * @bug version 1.0: When the result in memory is a value less than 10, entering a
-  *     number that begins with that same digit will cause the program to skip the first digit.
-  *
-  * @todo Add visual operation indicators.
-  *     Fix memory bug.
-  *     Optimize memory management.
-  *     Add functions.
   */
 #include "mainwindow.h"
 #include <QApplication>
