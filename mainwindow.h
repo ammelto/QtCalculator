@@ -16,6 +16,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void numberInput(int n);
+    QString getOp(operation op);
 private slots:
     void on_actionExit_triggered();
     void buttonHandler();

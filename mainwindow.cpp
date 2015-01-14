@@ -9,6 +9,7 @@
 static int curOp;
 static double memory;
 static bool newIn;
+static int tempOp;
 
 /**
  * @brief MainWindow::MainWindow Constructor for the main window.
@@ -151,6 +152,7 @@ void MainWindow::buttonHandler(){
         handleCurOp(plusOp);
   }else if(obj == ui->pushButton_Clear){
         curOp = noneOp; //Clears all fields, acts as a true clear. No CE yet
+        ui->memory->setText("");
         memory = 0;
         newIn = true;
         ui->numberField->setText("0");
@@ -160,12 +162,12 @@ void MainWindow::buttonHandler(){
         curOp = inverseOp;  //This allows the inverse to have the highest priority and cannot be chained (treated as a power)
         handleCurOp(noneOp);
   }else if(obj == ui->pushButton_Equals){
-        handleCurOp(equalsOp);
+            handleCurOp(equalsOp);
   }else if(obj == ui->pushButton_Minus){
         if((newIn || (curOp == minusOp && newIn)) && ui->numberField->toPlainText() != "-"){
             ui->numberField->setText("-"); //this allows the user to use the minus operation to input negatives
             newIn = false;
-        }else if(ui->numberField->toPlainText() == "-"){
+        }else if(ui->numberField->toPlainText() == "-" && !newIn){
             ui->numberField->setText("0");
             newIn = true;
             return;
@@ -211,10 +213,45 @@ void MainWindow::handleCurOp(operation newOp){
         break;
     }
     ui->numberField->setText(QString::number(memory));
-    if(newOp != equalsOp){
-        curOp = newOp;  //Allows for chaining via equals
+    QString str = getOp(newOp);
+
+    //Echos operations into memory bank
+    if(str != "NAN" && ui->memory->toPlainText().length() <= 32){
+        ui->memory->setText(ui->memory->toPlainText() + " " + QString::number(val) + " " + str);
+    }else if((newOp = equalsOp) && ui->memory->toPlainText().length() <= 32){
+        str = getOp((operation)curOp);
+        ui->memory->setText(ui->memory->toPlainText() + " " + QString::number(val) + " " + str);
+    }else{
+        ui->memory->setText("");
     }
+
     newIn = true;
+
+    if(newOp == equalsOp){
+        return;
+    }else{
+        curOp = newOp;
+    }
+
+
+}
+
+/**
+ * @brief MainWindow::getOp translates operation enum into qstring
+ * @param op operation to be converted
+ * @return returns a string or nan if not chainable.
+ */
+QString MainWindow::getOp(operation op){
+    //noneOp, multiplyOp, divideOp, minusOp, plusOp, inverseOp, modOp, percentOp, rootOp, equalsOp
+    switch(op){
+    case plusOp: return "+";
+    case multiplyOp: return "*";
+    case divideOp: return "/";
+    case minusOp: return "-";
+    case modOp: return "mod";
+    case percentOp: return "%";
+    }
+    return "NAN";
 }
 
 /**
